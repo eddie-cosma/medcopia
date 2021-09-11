@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %} - Shortage Alert</title>
+</head>
+<body>
+{% with messages = get_flashed_messages() %}
+    {% for message in messages %}
+        <div class="alert">{{ message }}</div>
+    {% endfor %}
+{% endwith %}
+
+{% block content %}
+{% endblock %}
+</body>
+</html>
