@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %} - Shortage Alert</title>
+    {% block head %}{% endblock %}
 </head>
 <body>
 {% with messages = get_flashed_messages() %}
