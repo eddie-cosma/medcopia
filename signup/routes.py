@@ -20,7 +20,7 @@ def signup():
 
         if registrant := db.session.query(User).filter_by(email=email).one_or_none():
             if registrant.opt_in_code:
-                # User.send_opt_in_confirmation(email)
+                User.send_opt_in_confirmation(email)
                 flash('Re-sending confirmation email. Please check your inbox to confirm this registration.')
             else:
                 flash('This email address is already registered.')
@@ -30,7 +30,7 @@ def signup():
             db.session.commit()
 
             User.generate_keys(email)
-            # User.send_opt_in_confirmation(email)
+            User.send_opt_in_confirmation(email)
         else:
             flash('This email address is invalid.')
 
