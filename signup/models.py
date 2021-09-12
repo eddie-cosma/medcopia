@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from flask import current_app, abort
+from flask import current_app
 from itsdangerous import URLSafeSerializer
 
 from . import db
@@ -35,10 +35,10 @@ class User(db.Model):
             db.session.commit()
 
     @classmethod
-    def verify_token(cls, token: str, type: str = 'opt_in') -> bool | str:
-        if type == 'opt_in':
+    def verify_token(cls, token: str, token_type: str = 'opt_in') -> bool | str:
+        if token_type == 'opt_in':
             serializer = opt_in_serializer
-        elif type == 'opt_out':
+        elif token_type == 'opt_out':
             serializer = opt_out_serializer
         else:
             raise ValueError('Invalid serializer type. Must be either "opt_in" or "opt_out".')
@@ -51,12 +51,12 @@ class User(db.Model):
         if not (registrant := db.session.query(cls).filter_by(email=email).one_or_none()):
             return False
 
-        if type == 'opt_in' and registrant.opt_in_code:
+        if token_type == 'opt_in' and registrant.opt_in_code:
             registrant.opt_in_code = None
             db.session.add(registrant)
             db.session.commit()
             return email
-        elif type == 'opt_out':
+        elif token_type == 'opt_out':
             db.session.delete(registrant)
             db.session.commit()
             return True

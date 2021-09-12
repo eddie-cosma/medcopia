@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}Confirm{% endblock %}
+{% block title %}Medcopia Registration Confirmed{% endblock %}
 
 {% block content %}
-    <h1>Confirmed</h1>
+    <p>Your registration has been confirmed for {{ registrant }}.</p>
+    <p>Please add <span style="font-weight: bold">{{ service_address }}</span> to your contacts to ensure that future mailings do not go to your spam folder.</p>
+    <p>If you would like to unsubscribe at any point, please click on the unsubscribe link at the botton of any message we send you.</p>
 {% endblock %}

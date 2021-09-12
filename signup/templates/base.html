@@ -3,16 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %} - Shortage Alert</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     {% block head %}{% endblock %}
 </head>
 <body>
-{% with messages = get_flashed_messages() %}
-    {% for message in messages %}
-        <div class="alert">{{ message }}</div>
-    {% endfor %}
-{% endwith %}
+<div id="main">
+    <h1>{{ self.title() }}</h1>
+    {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+            <div class="alert">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
 
-{% block content %}
-{% endblock %}
+    {% block content %}
+    {% endblock %}
+</div>
+<footer>
+    <p>Copyright &copy; 2021 Eddie Cosma where applicable. All Rights Reserved.</p>
+    <p>Data is sourced from and owned by the <a href="https://www.ashp.org/drug-shortages/current-shortages">American
+        Society of Health System Pharmacists</a> and the University of Utah Drug Information Service.</p>
+</footer>
 </body>
 </html>

@@ -25,7 +25,7 @@ def send_confirmation(address: str, confirm_token: str, unsubscribe_token: str):
         subject="Confirm drug shortage alert subscription",
         sender=current_app.config["MAIL_DEFAULT_SENDER"],
         recipients=[address],
-        reply_to='noreply@cosmanaut.com',
+        reply_to=current_app.config["MAIL_DEFAULT_SENDER"],
         html=render_template('email.html', email=address, token=confirm_token),
         extra_headers={
             'List-Unsubscribe': f'<{unsubscribe_link}>',

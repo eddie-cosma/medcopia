@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Confirm drug shortage alert subscription</title>
+    <title>Confirm Medcopia drug shortage alert registration</title>
     <style>
         body {
             font-family: Helvetica, Arial, sans-serif;
@@ -11,8 +11,8 @@
     </style>
 </head>
 <body>
-<h1>Confirm subscription</h1>
-<p>Please click the link below to confirm your subscription to drug shortage email alerts.</p>
+<h1>Medcopia Registration Confirmation</h1>
+<p>Please click the link below to confirm your subscription to Medcopia drug shortage email alerts.</p>
 <p>
     <a href="{{ url_for('shortage.confirm', token=token, _external=True) }}">
         {{ url_for('shortage.confirm', token=token, _external=True) }}
