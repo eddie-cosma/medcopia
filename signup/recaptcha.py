@@ -12,7 +12,6 @@ def verify_recaptcha(token: str) -> bool:
     }
     response = requests.post(recaptcha_url, data=payload)
     if response.status_code == 200:
-        print(response.json())
         return response.json()['success']
 
     return False

@@ -30,12 +30,9 @@ class User(db.Model):
     @classmethod
     def send_opt_in_confirmation(cls, email: str):
         if registrant := db.session.query(cls).filter_by(email=email).one_or_none():
-            if registrant.opt_ins_sent < current_app.config['MAIL_PER_DAY_MAX']:
-                send_confirmation(email, registrant.opt_in_code, registrant.opt_out_code)
-                registrant.opt_ins_sent += 1
-                db.session.commit()
-            else:
-                abort(429)
+            send_confirmation(email, registrant.opt_in_code, registrant.opt_out_code)
+            registrant.opt_ins_sent += 1
+            db.session.commit()
 
     @classmethod
     def verify_token(cls, token: str, type: str = 'opt_in') -> bool | str:
