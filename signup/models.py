@@ -16,11 +16,12 @@ class User(db.Model):
     created_date = db.Column(db.DateTime(timezone=False), nullable=False, server_default=db.func.now())
     modified_date = db.Column(db.DateTime(timezone=False), nullable=True, onupdate=db.func.now())
 
-    def generate_keys(self):
-        with current_app.app_context():
-            self.opt_in_code = opt_in_serializer.dumps(self.email)
-            self.opt_out_code = opt_out_serializer.dumps(self.email)
-            Session.object_session(self).commit()
+    @classmethod
+    def generate_keys(cls, email: str):
+        if registrant := db.session.query(cls).filter_by(email=email).one_or_none():
+            registrant.opt_in_code = opt_in_serializer.dumps(registrant.email)
+            registrant.opt_out_code = opt_out_serializer.dumps(registrant.email)
+            db.session.commit()
 
     @classmethod
     def verify_token(cls, email: str, token: str, type: str = 'opt_in') -> bool:

@@ -2,10 +2,11 @@ import json
 import os
 
 from flask import Flask
+from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 
+mail = Mail()
 db = SQLAlchemy()
-
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -20,6 +21,7 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    mail.init_app(app)
     db.init_app(app)
 
     with app.app_context():
