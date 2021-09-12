@@ -8,6 +8,7 @@ from flask_sqlalchemy import SQLAlchemy
 mail = Mail()
 db = SQLAlchemy()
 
+
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
 

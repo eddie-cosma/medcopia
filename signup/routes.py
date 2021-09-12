@@ -16,7 +16,7 @@ def signup():
         email = request.form.get('email')
         if registrant := db.session.query(User).filter_by(email=email).one_or_none():
             if registrant.opt_in_code:
-                send_confirmation(email, registrant.opt_in_code, registrant.opt_out_code)
+                # send_confirmation(email, registrant.opt_in_code, registrant.opt_out_code)
                 flash('Re-sending confirmation email. Please check your inbox to confirm this registration.')
             else:
                 flash('This email address is already registered.')
@@ -29,23 +29,23 @@ def signup():
 
             User.generate_keys(email)
             registrant = db.session.query(User).filter_by(email=email).one_or_none()
-            send_confirmation(email, registrant.opt_in_code, registrant.opt_out_code)
+            # send_confirmation(email, registrant.opt_in_code, registrant.opt_out_code)
 
         return render_template('signup.html', registrant=email)
 
 
-@bp.route('/confirm/<email>/<token>', methods=['GET'])
-def confirm(email: str, token: str):
-    if User.verify_token(email, token, type='opt_in'):
+@bp.route('/confirm/<token>', methods=['GET'])
+def confirm(token: str):
+    if email := User.verify_token(token, type='opt_in'):
         return render_template('confirm.html', registrant=email)
     else:
         flash('This email address has not been registered.')
         return redirect(url_for('shortage.signup'))
 
 
-@bp.route('/unsubscribe/<email>/<token>', methods=['GET'])
-def unsubscribe(email: str, token: str):
-    if User.verify_token(email, token, type='opt_out'):
+@bp.route('/unsubscribe/<token>', methods=['GET'])
+def unsubscribe(token: str):
+    if User.verify_token(token, type='opt_out'):
         return render_template('unsubscribe.html')
     else:
         flash('This email address has not been registered.')

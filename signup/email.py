@@ -4,7 +4,17 @@ from flask_mail import Message
 from . import mail
 
 
+def validate(address: str) -> bool:
+    ...
+
+
 def send_confirmation(address: str, confirm_token: str, unsubscribe_token: str):
+    unsubscribe_link = url_for(
+        "shortage.unsubscribe",
+        email=address,
+        token=unsubscribe_token,
+        _external=True,
+    )
     email = Message(
         subject="Confirm drug shortage alert subscription",
         sender=current_app.config["MAIL_DEFAULT_SENDER"],
@@ -12,7 +22,7 @@ def send_confirmation(address: str, confirm_token: str, unsubscribe_token: str):
         reply_to='noreply@cosmanaut.com',
         html=render_template('email.html', email=address, token=confirm_token),
         extra_headers={
-            'List-Unsubscribe': url_for('shortage.unsubscribe', email=address, token=unsubscribe_token, _external=True)
+            'List-Unsubscribe': f'<{unsubscribe_link}>',
         }
     )
     mail.send(email)
