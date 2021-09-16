@@ -10,8 +10,9 @@ class User(Base):
     opt_in_code = Column(String(255), nullable=True)
     opt_out_code = Column(String(255), nullable=True)
     opt_ins_sent = Column(Integer, nullable=False, default=0)
-    created_date = Column(DateTime(timezone=False), nullable=False, server_default=func.now())
-    modified_date = Column(DateTime(timezone=False), nullable=True, onupdate=func.now())
+    last_message_time = Column(DateTime(timezone=False), nullable=True)
+    created_time = Column(DateTime(timezone=False), nullable=False, server_default=func.now())
+    modified_time = Column(DateTime(timezone=False), nullable=True, onupdate=func.now())
 
 
 class Drug(Base):

@@ -1,10 +1,10 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, current_app
 
 from models.models import User
+from helpers.email import validate
 from helpers.recaptcha import verify_recaptcha
 from signup import db
-from signup.database import generate_keys, send_opt_in_confirmation, verify_token
-from signup.email import validate
+from signup.utilities import generate_keys, send_opt_in_confirmation, verify_token
 
 bp = Blueprint('shortage', __name__)
 

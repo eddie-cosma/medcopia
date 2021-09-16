@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from flask import current_app
+from flask import current_app, render_template
 from itsdangerous import URLSafeSerializer
 
+from helpers.email import Message
 from models import User
 from signup import db
-from signup.email import send_confirmation
-
 
 opt_in_serializer = URLSafeSerializer(current_app.config['SECRET_KEY'], salt='opt_in')
 opt_out_serializer = URLSafeSerializer(current_app.config['SECRET_KEY'], salt='opt_out')
@@ -22,7 +21,14 @@ def generate_keys(email: str):
 
 def send_opt_in_confirmation(email: str):
     if registrant := db.session.query(User).filter_by(email=email).one_or_none():
-        send_confirmation(email, registrant.opt_in_code, registrant.opt_out_code)
+        email = Message(
+            subject="Confirm drug shortage alert subscription",
+            sender=current_app.config["MAIL_DEFAULT_SENDER"],
+            recipient=registrant,
+            reply_to=current_app.config["MAIL_DEFAULT_SENDER"],
+            html=render_template('email.html', recipient=registrant),
+        )
+        email.send()
         registrant.opt_ins_sent += 1
         db.session.commit()
 
