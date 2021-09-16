@@ -2,7 +2,7 @@ from flask import current_app, render_template, url_for
 from flask_mail import Message
 from validate_email import validate_email
 
-from . import mail
+from signup import mail
 
 
 def validate(address: str) -> bool:
