@@ -1,16 +1,9 @@
-import json
-from pathlib import Path
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base, sessionmaker
 
-CURRENT_FOLDER = Path(__file__).parent.resolve()
-INSTANCE_FOLDER = CURRENT_FOLDER.parent / 'instance'
+from config import config
 
-with open(INSTANCE_FOLDER / 'config.json', 'r') as f:
-    CONFIG = json.load(f)
-
-engine = create_engine('sqlite:////' + str(INSTANCE_FOLDER / 'data.sqlite'))
+engine = create_engine(config['SQLALCHEMY_DATABASE_URI'])
 Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 

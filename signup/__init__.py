@@ -1,21 +1,20 @@
-import json
 import os
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
+from config import config
 from models import Base
 
 db = SQLAlchemy(metadata=Base.metadata)
 
 
-def create_app(test_config=None):
-    app = Flask(__name__, instance_relative_config=True)
+def create_app(additional_config=None):
+    app = Flask(__name__)
 
-    if test_config is None:
-        app.config.from_file('config.json', load=json.load)
-    else:
-        app.config.from_mapping(test_config)
+    app.config.update(config)
+    if additional_config:
+        app.config.update(additional_config)
 
     try:
         os.makedirs(app.instance_path)

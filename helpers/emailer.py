@@ -2,17 +2,18 @@ import os
 import smtplib
 import ssl
 from datetime import datetime
-from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from email.utils import make_msgid, formatdate
 from functools import wraps
 from time import sleep
 
 from flask import render_template, url_for
-
-from models import CONFIG, User
-from signup import create_app
 from validate_email import validate_email
+
+from config import config
+from models import User
+from signup import create_app
 
 
 def validate(address: str) -> bool:
@@ -48,8 +49,8 @@ class Message:
         self.subject = subject
         self.html = html
 
-        self.sender = sender or CONFIG['MAIL_DEFAULT_SENDER']
-        self.reply_to = reply_to or CONFIG['MAIL_DEFAULT_SENDER']
+        self.sender = sender or config['MAIL_DEFAULT_SENDER']
+        self.reply_to = reply_to or config['MAIL_DEFAULT_SENDER']
         self.extra_headers = extra_headers
 
         self.msgId = make_msgid()
@@ -76,10 +77,10 @@ class Message:
 
     @exclude_during_testing
     def send(self):
-        host = CONFIG['MAIL_SERVER']
-        port = CONFIG['MAIL_PORT']
-        username = CONFIG['MAIL_USERNAME']
-        password = CONFIG['MAIL_PASSWORD']
+        host = config['MAIL_SERVER']
+        port = config['MAIL_PORT']
+        username = config['MAIL_USERNAME']
+        password = config['MAIL_PASSWORD']
         context = ssl.create_default_context()
         with smtplib.SMTP_SSL(host, port, context=context) as server:
             server.login(username, password)
@@ -125,10 +126,10 @@ class MassMessage:
 
     @exclude_during_testing
     def send_all(self):
-        host = CONFIG['MAIL_SERVER']
-        port = CONFIG['MAIL_PORT']
-        username = CONFIG['MAIL_USERNAME']
-        password = CONFIG['MAIL_PASSWORD']
+        host = config['MAIL_SERVER']
+        port = config['MAIL_PORT']
+        username = config['MAIL_USERNAME']
+        password = config['MAIL_PASSWORD']
         context = ssl.create_default_context()
         with smtplib.SMTP_SSL(host, port, context=context) as server:
             server.login(username, password)

@@ -8,6 +8,6 @@ pytest_plugins = [
 
 
 def test_reset_email_counter(client, registrant):
-    reset_email_counter()
+    reset_email_counter(db.session)
     count = db.session.query(User).filter_by(id=registrant.id).one_or_none().opt_ins_sent
     assert count == 0
