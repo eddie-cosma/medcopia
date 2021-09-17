@@ -2,6 +2,8 @@ from sqlalchemy import Column, Integer, DateTime, String, func
 
 from models import Base
 
+ashp_base_detail_url = 'https://www.ashp.org/drug-shortages/current-shortages/drug-shortage-detail.aspx?id='
+
 
 class User(Base):
     __tablename__ = 'user'
@@ -19,3 +21,7 @@ class Drug(Base):
     __tablename__ = 'drug'
     id = Column(Integer, primary_key=True)
     name = Column(String(255), nullable=False)
+
+    @property
+    def url(self):
+        return ashp_base_detail_url + str(self.id)

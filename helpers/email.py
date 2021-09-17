@@ -79,10 +79,10 @@ class Message:
             return url_for('shortage.unsubscribe', token=self.recipient.opt_out_code, _external=True)
 
     @staticmethod
-    def render_template(template: str, recipient: User) -> str:
+    def render_template(template: str, recipient: User, **template_args) -> str:
         signup_app = create_app()
         with signup_app.app_context():
-            return render_template(template, recipient=recipient)
+            return render_template(template, recipient=recipient, **template_args)
 
 
 class MassMessage:
@@ -94,10 +94,11 @@ class MassMessage:
                  reply_to: str = None,
                  extra_headers: dict[str, str] = None,
                  max_per_hour: int = 200,
+                 **template_args,
                  ):
         self.messages = []
         for recipient in recipients:
-            html = Message.render_template(template_name, recipient)
+            html = Message.render_template(template_name, recipient, **template_args)
             message = Message(
                 recipient=recipient,
                 subject=subject,

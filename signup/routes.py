@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, current_app
 
-from models.models import User
+from models import User
 from helpers.email import validate
 from helpers.recaptcha import verify_recaptcha
 from signup import db

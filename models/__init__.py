@@ -14,5 +14,5 @@ engine = create_engine('sqlite:////' + str(INSTANCE_FOLDER / 'data.sqlite'))
 Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-from .models import User, Drug
+from .database import User, Drug
 Base.metadata.create_all(bind=engine)
