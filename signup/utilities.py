@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 from flask import current_app, render_template
 from itsdangerous import URLSafeSerializer
 
@@ -28,8 +30,10 @@ def send_opt_in_confirmation(email: str):
             reply_to=current_app.config["MAIL_DEFAULT_SENDER"],
             html=render_template('email.html', recipient=registrant),
         )
-        email.send()
+        if os.getenv('TESTING', 'False') == 'False':
+            email.send()
         registrant.opt_ins_sent += 1
+        db.session.add(registrant)
         db.session.commit()
 
 

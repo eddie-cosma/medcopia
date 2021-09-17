@@ -4,7 +4,9 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-db = SQLAlchemy()
+from models import Base
+
+db = SQLAlchemy(metadata=Base.metadata)
 
 
 def create_app(test_config=None):

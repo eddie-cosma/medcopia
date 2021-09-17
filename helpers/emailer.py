@@ -1,9 +1,11 @@
+import os
 import smtplib
 import ssl
 from datetime import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.utils import make_msgid, formatdate
+from functools import wraps
 from time import sleep
 
 from flask import render_template, url_for
@@ -21,6 +23,15 @@ def validate(address: str) -> bool:
         check_dns=True,
         check_smtp=False,
     )
+
+
+def exclude_during_testing(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if os.getenv('TESTING', 'False') == 'False':
+            func(*args, **kwargs)
+
+    return wrapper
 
 
 class Message:
@@ -63,6 +74,7 @@ class Message:
         message.attach(self._html)
         return message
 
+    @exclude_during_testing
     def send(self):
         host = CONFIG['MAIL_SERVER']
         port = CONFIG['MAIL_PORT']
@@ -111,6 +123,7 @@ class MassMessage:
 
         self.delay = 1 / (max_per_hour / 60 / 60)
 
+    @exclude_during_testing
     def send_all(self):
         host = CONFIG['MAIL_SERVER']
         port = CONFIG['MAIL_PORT']
