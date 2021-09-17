@@ -43,8 +43,8 @@ class DrugDelta:
 
     def update_database(self):
         session = self._session
-        for shortage in self.resolved_shortages:
-            session.remove(shortage)
+        delete_ids = [drug.id for drug in self.resolved_shortages]
+        session.query(Drug).filter(Drug.id.in_(delete_ids)).delete()
         for shortage in self.new_shortages:
             session.add(Drug(
                 id=shortage.drug_id,

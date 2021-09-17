@@ -16,11 +16,16 @@ class User(Base):
     created_time = Column(DateTime(timezone=False), nullable=False, server_default=func.now())
     modified_time = Column(DateTime(timezone=False), nullable=True, onupdate=func.now())
 
+    def __repr__(self):
+        return f'<Registrant {self.email}>'
 
 class Drug(Base):
     __tablename__ = 'drug'
     id = Column(Integer, primary_key=True)
     name = Column(String(255), nullable=False)
+
+    def __repr__(self):
+        return f'<Drug shortage for {self.name}>'
 
     @property
     def url(self):
