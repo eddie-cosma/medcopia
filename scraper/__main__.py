@@ -3,7 +3,7 @@ from datetime import date
 import requests
 from bs4 import BeautifulSoup
 
-from helpers.email import MassMessage
+from helpers.emailer import MassMessage
 from models import Session, User
 from models.delta import ASHPDrug, DrugDelta
 

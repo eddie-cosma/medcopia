@@ -3,7 +3,7 @@ from __future__ import annotations
 from flask import current_app, render_template
 from itsdangerous import URLSafeSerializer
 
-from helpers.email import Message
+from helpers.emailer import Message
 from models import User
 from signup import db
 
