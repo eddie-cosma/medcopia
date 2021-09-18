@@ -7,13 +7,13 @@ from email.mime.text import MIMEText
 from email.utils import make_msgid, formatdate
 from functools import wraps
 from time import sleep
+from urllib.parse import urlunparse
 
-from flask import render_template, url_for
+import jinja2
 from validate_email import validate_email
 
 from config import config
 from models import User
-from signup import create_app
 
 
 def validate(address: str) -> bool:
@@ -24,6 +24,13 @@ def validate(address: str) -> bool:
         check_dns=True,
         check_smtp=False,
     )
+
+
+def render_template(template_name, **context):
+    template_folder_uri = config['ROOT'] / f'signup/templates/'
+    return jinja2.Environment(
+        loader=jinja2.FileSystemLoader(template_folder_uri)
+    ).get_template(template_name).render(context)
 
 
 def exclude_during_testing(func):
@@ -39,7 +46,7 @@ class Message:
     def __init__(self,
                  recipient: User,
                  subject: str,
-                 html: str,
+                 html: str = None,
                  sender: str = None,
                  reply_to: str = None,
                  extra_headers: dict[str, str] = None,
@@ -47,7 +54,6 @@ class Message:
 
         self.recipient = recipient
         self.subject = subject
-        self.html = html
 
         self.sender = sender or config['MAIL_DEFAULT_SENDER']
         self.reply_to = reply_to or config['MAIL_DEFAULT_SENDER']
@@ -56,8 +62,10 @@ class Message:
         self.msgId = make_msgid()
         self.date = formatdate()
 
-        self._html = MIMEText(self.html, 'html')
         self.mime_message = self.make_message()
+
+        if html:
+            self.html = html
 
     def make_message(self):
         message = MIMEMultipart('alternative')
@@ -72,8 +80,16 @@ class Message:
         if self.extra_headers:
             for header, value in self.extra_headers.items():
                 message[header] = value
-        message.attach(self._html)
         return message
+
+    @property
+    def html(self):
+        return self._html
+
+    @html.setter
+    def html(self, html):
+        self._html = html
+        self.mime_message.attach(MIMEText(html, 'html'))
 
     @exclude_during_testing
     def send(self):
@@ -87,15 +103,19 @@ class Message:
             server.sendmail(self.sender, self.recipient.email, self.mime_message.as_string())
 
     def get_unsubscribe_url(self):
-        signup_app = create_app()
-        with signup_app.app_context():
-            return url_for('shortage.unsubscribe', token=self.recipient.opt_out_code, _external=True)
+        scheme = config['PREFERRED_URL_SCHEME']
+        netloc = config['SERVER_NAME']
+        path = '/unsubscribe/' + self.recipient.opt_out_code
+        return urlunparse((scheme, netloc, path, '', '', ''))
 
-    @staticmethod
-    def render_template(template: str, recipient: User, **template_args) -> str:
-        signup_app = create_app()
-        with signup_app.app_context():
-            return render_template(template, recipient=recipient, **template_args)
+    def render_template(self, template: str, recipient: User, **template_args) -> str:
+        unsubscribe_url = self.get_unsubscribe_url()
+        return render_template(
+            template,
+            recipient=recipient,
+            unsubscribe_url=unsubscribe_url,
+            **template_args,
+        )
 
 
 class MassMessage:
@@ -111,15 +131,14 @@ class MassMessage:
                  ):
         self.messages = []
         for recipient in recipients:
-            html = Message.render_template(template_name, recipient, **template_args)
             message = Message(
                 recipient=recipient,
                 subject=subject,
-                html=html,
                 sender=sender,
                 reply_to=reply_to,
                 extra_headers=extra_headers,
             )
+            message.html = message.render_template(template_name, recipient, **template_args)
             self.messages.append(message)
 
         self.delay = 1 / (max_per_hour / 60 / 60)

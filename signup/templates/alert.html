@@ -83,11 +83,12 @@
     <div id="footer">
         <p>
             This message was sent to <a href="mailto:{{ recipient.email }}">{{ recipient.email }}</a>.<br>
-            <a href="{{ url_for('shortage.unsubscribe', token=recipient.opt_out_code, _external=True) }}">
+            <a href="{{ unsubscribe_url }}">
                 Click here to unsubscribe</a>.
         </p>
         <p>Copyright &copy; 2021 <a href="https://eddiecosma.com">Eddie Cosma</a> where applicable. All Rights Reserved.<br>
-            Shortage data is sourced from and owned by the <a href="https://www.ashp.org/drug-shortages/current-shortages">American
+            Shortage data is sourced from and owned by the <a
+                    href="https://www.ashp.org/drug-shortages/current-shortages">American
                 Society of Health System Pharmacists</a>.</p>
     </div>
 </div>

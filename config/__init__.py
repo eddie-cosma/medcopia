@@ -5,7 +5,9 @@ from pathlib import Path
 ROOT = Path(__file__).parent.parent.absolute()
 
 config = {
+    'ROOT': ROOT,
     'SECRET_KEY': 'dev',
+    'PREFERRED_URL_SCHEME': 'http',
     'SERVER_NAME': 'localhost:5000',
     'SQLALCHEMY_TRACK_MODIFICATIONS': False,
     'SQLALCHEMY_DATABASE_URI': 'sqlite:///' + str(ROOT / 'instance/data.sqlite'),

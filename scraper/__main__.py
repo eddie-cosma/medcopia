@@ -1,3 +1,4 @@
+import os
 from datetime import date
 
 import requests
@@ -35,8 +36,10 @@ if delta.new_shortages or delta.resolved_shortages:
         new_shortages=delta.new_shortages,
         resolved_shortages=delta.resolved_shortages,
     )
-    messenger.send_all()
-    delta.update_database()
+
+    if os.getenv('TESTING', 'False') == 'False':
+        messenger.send_all()
+        delta.update_database()
 
 session.commit()
 session.close()
