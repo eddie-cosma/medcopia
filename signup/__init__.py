@@ -34,3 +34,5 @@ def create_app(additional_config=None):
 
 if __name__ == '__main__':
     create_app().run()
+else:
+    application = create_app()
