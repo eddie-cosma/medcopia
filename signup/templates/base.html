@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     {% block head %}{% endblock %}
 </head>
 <body>
 <div id="main">
-    <h1>{{ self.title() }}</h1>
+    <h1><img src="{{ url_for('static', filename='logo.png') }}" style="width: 100px;"><br>{{ self.title() }}</h1>
     {% with messages = get_flashed_messages() %}
         {% for message in messages %}
             <div class="alert">{{ message }}</div>
