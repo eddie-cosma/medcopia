@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Helvetica, Arial, sans-serif;
-            font-size: 11pt;
+            font-size: 12pt;
             margin: 0;
             padding: 0;
         }
@@ -20,18 +20,26 @@
 
         #main {
             margin: 0 auto;
-            padding: 20px;
+            padding: 10px 20px 20px 20px;
             background-color: #f5f5f5;
         }
 
+        #logo {
+            height: 75px;
+        }
+
         h1 {
-            margin-bottom: 0;
+            margin: 0;
+            padding: 0;
+            text-align: center;
         }
 
         h3 {
             margin-top: 0;
+            padding-top: 0;
             font-weight: normal;
             font-style: italic;
+            text-align: center;
         }
 
         #main a {
@@ -59,7 +67,7 @@
 <body>
 <div id="email">
     <div id="main">
-        <h1>Medcopia Shortage Alert</h1>
+        <h1><img src="{{ logo_uri }}" id="logo"><br>Medcopia Shortage Alert</h1>
         <h3>{{ today }}</h3>
         <p>We have detected the following changes to the <a
                 href="https://www.ashp.org/drug-shortages/current-shortages/drug-shortages-list?page=CurrentShortages">ASHP

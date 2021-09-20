@@ -62,6 +62,9 @@ class Message:
         self.msgId = make_msgid()
         self.date = formatdate()
 
+        self._logo_path = '/static/logo.png'
+        self._unsubscribe_path = '/unsubscribe/' + self.recipient.opt_out_code
+
         self.mime_message = self.make_message()
 
         if html:
@@ -76,7 +79,7 @@ class Message:
         message['Message-ID'] = self.msgId
         message['Date'] = self.date
         if self.recipient.opt_out_code:
-            message['List-Unsubscribe'] = f'<{self.get_unsubscribe_url()}>'
+            message['List-Unsubscribe'] = f'<{self.get_external_url(self._unsubscribe_path)}>'
         if self.extra_headers:
             for header, value in self.extra_headers.items():
                 message[header] = value
@@ -102,17 +105,18 @@ class Message:
             server.login(username, password)
             server.sendmail(self.sender, self.recipient.email, self.mime_message.as_string())
 
-    def get_unsubscribe_url(self):
+    @staticmethod
+    def get_external_url(path):
         scheme = config['PREFERRED_URL_SCHEME']
         netloc = config['SERVER_NAME']
-        path = '/unsubscribe/' + self.recipient.opt_out_code
         return urlunparse((scheme, netloc, path, '', '', ''))
 
     def render_template(self, template: str, recipient: User, **template_args) -> str:
-        unsubscribe_url = self.get_unsubscribe_url()
+        unsubscribe_url = self.get_external_url(self._unsubscribe_path)
         return render_template(
             template,
             recipient=recipient,
+            logo_uri=self.get_external_url(self._logo_path),
             unsubscribe_url=unsubscribe_url,
             **template_args,
         )
