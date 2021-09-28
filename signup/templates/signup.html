@@ -2,6 +2,12 @@
 
 {% block head %}
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <meta property="og:title" content="Medcopia Drug Shortage Alerts Sign Up">
+    <meta property="og:image" content="{{ url_for('static', filename='icon.png', _external=True) }}">
+    <meta property="og:url" content="https://medcopia.cosmanaut.com/">
+    <meta property="og:type" content="website">
+    <meta property="og:description"
+          content="Get email alerts any time drugs are added to or removed from the ASHP drug shortages list.">
 {% endblock %}
 
 {% block title %}Medcopia Drug Shortage Alerts{% endblock %}
