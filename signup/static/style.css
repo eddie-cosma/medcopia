@@ -68,3 +68,16 @@ footer {
 footer a {
     color: #c2d7db;
 }
+
+@media only screen and (max-width: 768px) {
+    #main {
+        width: inherit;
+        margin: 0;
+        font-size: 14pt;
+    }
+
+    footer {
+        width: inherit;
+        margin: 0;
+    }
+}
