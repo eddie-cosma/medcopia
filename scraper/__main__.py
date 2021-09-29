@@ -29,6 +29,7 @@ if delta.new_shortages or delta.resolved_shortages:
     recipients = session.query(User).filter(User.opt_in_code == None).all()
     today = date.today().strftime('%B %-d, %Y')
     messenger = MassMessage(
+        db_session=session,
         recipients=recipients,
         subject='Medcopia shortage alert',
         template_name='alert.html',

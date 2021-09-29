@@ -13,7 +13,7 @@ import jinja2
 from validate_email import validate_email
 
 from config import config
-from models import User
+from models import User, Session
 
 
 def validate(address: str) -> bool:
@@ -124,6 +124,7 @@ class Message:
 
 class MassMessage:
     def __init__(self,
+                 db_session: Session,
                  recipients: list[User],
                  subject: str,
                  template_name: str,
@@ -147,6 +148,8 @@ class MassMessage:
 
         self.delay = 1 / (max_per_hour / 60 / 60)
 
+        self._session = db_session
+
     @exclude_during_testing
     def send_all(self):
         host = config['MAIL_SERVER']
@@ -159,4 +162,5 @@ class MassMessage:
             for message in self.messages:
                 server.sendmail(message.sender, message.recipient.email, message.mime_message.as_string())
                 message.recipient.last_message_time = datetime.utcnow()
+                self._session.commit()
                 sleep(self.delay)
