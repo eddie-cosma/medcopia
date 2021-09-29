@@ -1,3 +1,4 @@
+import logging
 import os
 from datetime import date
 
@@ -8,10 +9,14 @@ from helpers.emailer import MassMessage
 from models import Session, User
 from models.delta import ASHPDrug, DrugDelta
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s : %(levelname)s : %(message)s')
+
+logging.info('Checking ASHP website for updates')
 shortage_list_url = 'https://www.ashp.org/drug-shortages/current-shortages/drug-shortages-list?page=CurrentShortages'
 shortage_list = requests.get(shortage_list_url)
 
 if shortage_list.status_code != 200:
+    logging.error('ASHP website unreachable')
     exit()
 
 ashp_drugs = []
@@ -24,6 +29,7 @@ for link in soup.find(id='1_dsGridView').find_all('a'):
 
 session = Session()
 delta = DrugDelta(ashp_drugs, session)
+logging.info(f'Found {len(delta.new_shortages)} new and {len(delta.resolved_shortages)} resolved shortages')
 
 if delta.new_shortages or delta.resolved_shortages:
     recipients = session.query(User).filter(User.opt_in_code == None).all()
@@ -39,7 +45,9 @@ if delta.new_shortages or delta.resolved_shortages:
     )
 
     if os.getenv('TESTING', 'False') == 'False':
+        logging.info('Sending shortage alert emails')
         messenger.send_all()
+        logging.info('Updating local database with most recent shortage list')
         delta.update_database()
 
 session.commit()
