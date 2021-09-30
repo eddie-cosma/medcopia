@@ -31,7 +31,6 @@ def test_homepage(client):
 
 def test_registration(client):
     rv = client.post('/', data={'email': 'test@cosmanaut.com'})
-    print(rv.data)
     assert b'Confirmation email has been sent to' in rv.data
     registrant = db.session.query(User).filter_by(email='test@cosmanaut.com').one_or_none()
     assert registrant

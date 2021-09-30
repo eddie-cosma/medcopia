@@ -1,4 +1,5 @@
 import os
+import re
 import smtplib
 import ssl
 from datetime import datetime
@@ -10,21 +11,13 @@ from time import sleep
 from urllib.parse import urlunparse
 
 import jinja2
-from validate_email import validate_email
 
 from config import config
 from models import User, Session
 
 
 def validate(address: str) -> bool:
-    """Validate email addresses using :py:mod:`py3-validate-email`"""
-    return validate_email(
-        address,
-        check_format=True,
-        check_blacklist=True,
-        check_dns=True,
-        check_smtp=False,
-    )
+    return True if re.fullmatch(r'[\w\.-]+@[\w\.-]+(\.[\w]+)+', address) else False
 
 
 def render_template(template_name, **context):
