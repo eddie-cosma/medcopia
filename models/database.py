@@ -6,6 +6,8 @@ ashp_base_detail_url = 'https://www.ashp.org/drug-shortages/current-shortages/dr
 
 
 class User(Base):
+    """The user model."""
+
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
     email = Column(String(255), nullable=False, unique=True)
@@ -19,7 +21,10 @@ class User(Base):
     def __repr__(self):
         return f'<Registrant {self.email}>'
 
+
 class Drug(Base):
+    """The drug model."""
+
     __tablename__ = 'drug'
     id = Column(Integer, primary_key=True)
     name = Column(String(255), nullable=False)
@@ -29,4 +34,9 @@ class Drug(Base):
 
     @property
     def url(self):
+        """Get the ASHP drug shortages detail url based on :attr:`id` value.
+
+        This presumes that stored :attr:`id` values are synchronized between
+        the local database and the ASHP website.
+        """
         return ashp_base_detail_url + str(self.id)

@@ -1,3 +1,12 @@
+"""A module for sending email alerts when the shortage list updates.
+
+When run as a module, does the following:
+ * Get the latest version of the ASHP drug shortages list.
+ * Compare the current shortages to the (saved) previous shortages.
+ * If there are new or resolved shortages, send an alert email to all
+   confirmed emails in the database.
+"""
+
 import logging
 import os
 from datetime import date

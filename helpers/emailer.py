@@ -17,6 +17,7 @@ from models import User, Session
 
 
 def validate(address: str) -> bool:
+    """Validate email addresses using :py:mod:`py3-validate-email`"""
     return validate_email(
         address,
         check_format=True,
@@ -27,6 +28,7 @@ def validate(address: str) -> bool:
 
 
 def render_template(template_name, **context):
+    """Render a :py:mod:`jinja2` template without a :py:mod:`flask` context."""
     template_folder_uri = config['ROOT'] / f'signup/templates/'
     return jinja2.Environment(
         loader=jinja2.FileSystemLoader(template_folder_uri)
@@ -34,6 +36,7 @@ def render_template(template_name, **context):
 
 
 def exclude_during_testing(func):
+    """Exclude wrapped function when ``TESTING`` environmental variable is ``True``."""
     @wraps(func)
     def wrapper(*args, **kwargs):
         if os.getenv('TESTING', 'False') == 'False':
@@ -43,6 +46,8 @@ def exclude_during_testing(func):
 
 
 class Message:
+    """Represents an email message."""
+
     def __init__(self,
                  recipient: User,
                  subject: str,
@@ -71,6 +76,7 @@ class Message:
             self.html = html
 
     def make_message(self):
+        """Create a :py:class:`email.mime.multipart.MIMEMultipart` message with instance parameters."""
         message = MIMEMultipart('alternative')
         message['From'] = self.sender
         message['To'] = self.recipient.email
@@ -87,15 +93,23 @@ class Message:
 
     @property
     def html(self):
+        """Get the html body of the email."""
         return self._html
 
     @html.setter
     def html(self, html):
+        """Attach a new html body to the email, replacing the old one."""
         self._html = html
         self.mime_message.attach(MIMEText(html, 'html'))
 
     @exclude_during_testing
     def send(self):
+        """Send the email using the preconfigured SMTP settings.
+
+        .. note::
+            Currently only implicit SSL/TLS authentication is supported.
+            STARTTLS and unencrypted sending are not available.
+        """
         host = config['MAIL_SERVER']
         port = config['MAIL_PORT']
         username = config['MAIL_USERNAME']
@@ -106,12 +120,28 @@ class Message:
             server.sendmail(self.sender, self.recipient.email, self.mime_message.as_string())
 
     @staticmethod
-    def get_external_url(path):
+    def get_external_url(path: str) -> str:
+        """Add a url scheme and server to a specified url path.
+
+        :param path: the full url path to the file on the server, as
+            accessible by the end user in the browser.
+        :return: the same path with a url scheme and server name appended
+            to the front.
+        """
         scheme = config['PREFERRED_URL_SCHEME']
         netloc = config['SERVER_NAME']
         return urlunparse((scheme, netloc, path, '', '', ''))
 
     def render_template(self, template: str, recipient: User, **template_args) -> str:
+        """Render html template for a specified :py:class:`models.database.User`.
+
+        :param template: the name of the template file in the
+                         signup/templates/ folder.
+        :param recipient: User who will receive the email.
+        :param template_args: additional context arguments to pass to
+                              jinja2.
+        :return: rendered html template.
+        """
         unsubscribe_url = self.get_external_url(self._unsubscribe_path)
         return render_template(
             template,
@@ -123,6 +153,12 @@ class Message:
 
 
 class MassMessage:
+    """Represents a mass mailing with many recipients.
+
+    User-specific emails are generated using the specified parameters. This
+    is important so each recipient gets a custom unsubscribe link.
+    """
+
     def __init__(self,
                  db_session: Session,
                  recipients: list[User],
@@ -152,6 +188,12 @@ class MassMessage:
 
     @exclude_during_testing
     def send_all(self):
+        """Send queued user-specific emails sequentially.
+
+        A delay based on the :attr:`max_per_hour` instance attribute is used
+        to prevent abuse of the SMTP server. Send times are logged in the
+        database in case of failure.
+        """
         host = config['MAIL_SERVER']
         port = config['MAIL_PORT']
         username = config['MAIL_USERNAME']

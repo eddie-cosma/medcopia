@@ -1,3 +1,6 @@
+"""Miscellaneous utilities to support the web application. This needs to be
+restructured in future versions."""
+
 from __future__ import annotations
 
 import os
@@ -14,6 +17,7 @@ opt_out_serializer = URLSafeSerializer(current_app.config['SECRET_KEY'], salt='o
 
 
 def generate_keys(email: str):
+    """Generate opt-in and opt-out codes for a newly registered user."""
     if registrant := db.session.query(User).filter_by(email=email).one_or_none():
         registrant.opt_in_code = opt_in_serializer.dumps(registrant.email)
         registrant.opt_out_code = opt_out_serializer.dumps(registrant.email)
@@ -22,6 +26,7 @@ def generate_keys(email: str):
 
 
 def send_opt_in_confirmation(email: str):
+    """Send newly registered user a confirmation email."""
     if registrant := db.session.query(User).filter_by(email=email).one_or_none():
         email = Message(
             subject="Confirm drug shortage alert subscription",
@@ -38,6 +43,13 @@ def send_opt_in_confirmation(email: str):
 
 
 def verify_token(token: str, token_type: str = 'opt_in') -> bool | str:
+    """Verify that an opt-in or opt-out code is valid.
+
+    :param token: the opt-in or opt-out code
+    :param token_type: string literal ``'opt_in'`` or ``'opt_out'`` depending
+                       on the type of code passed.
+    :return: ``True`` if the code is valid, ``False`` otherwise.
+    """
     if token_type == 'opt_in':
         serializer = opt_in_serializer
     elif token_type == 'opt_out':
