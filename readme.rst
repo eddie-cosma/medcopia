@@ -159,3 +159,9 @@ License
 =========
 
 This software is licensed under the `GPL 3.0 <https://github.com/eddie-cosma/medcopia/blob/master/LICENSE>`_ license.
+
+=========
+Disclaimer
+=========
+
+This service is not affiliated, associated, authorized, or endorsed by the American Society of Health-System Pharmacists or the University of Utah Drug Information Service. All names and brands are properties of their respective owners.
