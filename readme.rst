@@ -9,11 +9,8 @@ Medcopia
 Medcopia is a hosted subscription service that tracks changes to the `ASHP drug shortages list <https://www.ashp.org/drug-shortages/current-shortages>`_ and sends email alerts to subscribers whenever changes are detected.
 
 =========
-Installation
-=========
-
 Download
----------
+=========
 
 Medcopia is currently installable by cloning the Github respository::
 
@@ -31,8 +28,9 @@ We also recommend installing ``uwsgi`` as a WSGI service and ``nginx`` as a reve
     pip install uwsgi
     sudo apt install nginx
 
+=========
 Configure
----------
+=========
 
 The default configuration is stored as a dict in the ``medcopia/config/__init__.py`` file. Configuration should be customized further by creating a ``medcopia/instance/config.json`` file to override the default values.
 
@@ -65,12 +63,13 @@ Note that currently only implicit TLS SMTP connections are supported. STARTTLS a
 ``MAIL_PER_DAY_MAX`` refers to the number of signup attempts that are allowed per email address per day. This value is reset by ``reset_email_counter.py`` daily (see Install section below).
 
 Testing configuration
-*********
+---------
 
 A testing configuration can be used by creating ``medcopia/instance/test_config.json`` in the same format as the example above. When testing, set the environmental variable ``TESTING=True`` to use the testing configuration, to prevent emails from being sent, and to bypass reCAPTCHA.
 
+=========
 Install
----------
+=========
 
 Medcopia is composed of three components that require installation:
 
@@ -79,7 +78,7 @@ Medcopia is composed of three components that require installation:
 #. A script called ``reset_email_counter.py`` that resets the number of registration attempts for each individual email address in the database. Registration attempts are limited by the ``MAIL_PER_DAY_MAX`` configuration value to prevent abuse. This script should be run once a day.
 
 ``signup`` web service
-*********
+---------
 
 The web service should be configured to run on a WSGI. For example, if using ``uwsgi``, you can save a ``config.ini`` file to the medcopia root directory::
 
@@ -130,8 +129,8 @@ Restart ``nginx`` after saving your configuration::
 
 You can use ``systemd`` to run this config automatically on system start. DigitalOcean has a `fantastic tutorial <https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uswgi-and-nginx-on-ubuntu-18-04>`_ giving more detail on this setup.
 
-``scraper`` and ``reset_email_counter`` scripts
-*********
+``scraper`` and ``reset_email_counter``
+----------
 
 ``scraper`` is run as a module from the medcopia root directory::
 
@@ -149,12 +148,14 @@ These scripts should be run once a day. The easiest way to do this automatically
 
 The same can be done for the ``scraper`` module.
 
+=========
 Contributing
----------
+=========
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
+=========
 License
----------
+=========
 
 This software is licensed under the `GPL 3.0 <https://github.com/eddie-cosma/medcopia/blob/master/LICENSE>`_ license.
