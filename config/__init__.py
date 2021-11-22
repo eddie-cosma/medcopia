@@ -34,6 +34,7 @@ config = {
     'REDDIT_USERNAME': '',
     'REDDIT_PASSWORD': '',
     'REDDIT_SUBREDDIT': '',
+    'REDDIT_NEW_SHORTAGE_FLAIR_ID': None,
 }
 """Default configuration"""
 
