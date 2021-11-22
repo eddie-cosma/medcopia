@@ -28,6 +28,8 @@ config = {
     'MAIL_PER_DAY_MAX': 5,
     'RECAPTCHA_SITE_KEY': '',
     'RECAPTCHA_SECRET_KEY': '',
+    'REDDIT_KEY': '',
+    'REDDIT_SECRET': '',
 }
 """Default configuration"""
 
