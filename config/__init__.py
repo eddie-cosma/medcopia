@@ -30,6 +30,9 @@ config = {
     'RECAPTCHA_SECRET_KEY': '',
     'REDDIT_KEY': '',
     'REDDIT_SECRET': '',
+    'REDDIT_USERAGENT': 'python:com.example.medcopia:v1.1',
+    'REDDIT_USERNAME': '',
+    'REDDIT_PASSWORD': '',
 }
 """Default configuration"""
 
