@@ -15,6 +15,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from helpers.emailer import MassMessage
+from helpers.reddit import RedditPost
 from models import Session, User
 from models.delta import ASHPDrug, DrugDelta
 
@@ -40,6 +41,18 @@ session = Session()
 delta = DrugDelta(ashp_drugs, session)
 logging.info(f'Found {len(delta.new_shortages)} new and {len(delta.resolved_shortages)} resolved shortages')
 
+# Post to Reddit
+if delta.new_shortages:
+    logging.info('Posting new shortages to Reddit.')
+    for new_shortage in delta.new_shortages:
+        reddit_submission = RedditPost(new_shortage)
+        reddit_submission.post()
+
+        # Ensure that only one post is submitted if testing
+        if os.getenv('TESTING', 'False') == 'True':
+            break
+
+# Send emails
 if delta.new_shortages or delta.resolved_shortages:
     recipients = session.query(User).filter(User.opt_in_code == None).all()
     today = date.today().strftime('%B %-d, %Y')
