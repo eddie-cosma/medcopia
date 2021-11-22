@@ -33,6 +33,7 @@ config = {
     'REDDIT_USERAGENT': 'python:com.example.medcopia:v1.1',
     'REDDIT_USERNAME': '',
     'REDDIT_PASSWORD': '',
+    'REDDIT_SUBREDDIT': '',
 }
 """Default configuration"""
 
