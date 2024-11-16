@@ -1,10 +1,8 @@
 """Configuration module for the Medcopia package.
 
 This exports config, a dict of configuration key-value pairs. Defaults are
-defined here. Full configuration should be saved as config.json in the
-instance folder. A separate testing configuration can be saved as
-test_config.json in the instance folder and will be loaded instead if the
-TESTING environment variable is set to True.
+defined here. Defaults can be overridden by exporting environment variables
+prior to running the application.
 """
 
 import json
@@ -13,6 +11,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent.parent.absolute()
 
+# Default configuration
 config = {
     'ROOT': ROOT,
     'SECRET_KEY': 'dev',
@@ -29,11 +28,8 @@ config = {
     'RECAPTCHA_SITE_KEY': '',
     'RECAPTCHA_SECRET_KEY': '',
 }
-"""Default configuration"""
 
-if os.path.exists(ROOT / 'instance/config.json') and os.getenv('TESTING', 'False') == 'False':
-    with open(ROOT / 'instance/config.json') as f:
-        config.update(json.load(f))
-elif os.path.exists(ROOT / 'instance/test_config.json') and os.getenv('TESTING', 'False') == 'True':
-    with open(ROOT / 'instance/test_config.json') as f:
-        config.update(json.load(f))
+# Override the defaults with environment variables
+for key, value in os.environ.items():
+    if key in config.keys():
+        config[key] = value

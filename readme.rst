@@ -32,7 +32,7 @@ We also recommend installing ``uwsgi`` as a WSGI service and ``nginx`` as a reve
 Configure
 =========
 
-The default configuration is stored as a dict in the ``medcopia/config/__init__.py`` file. Configuration should be customized further by creating a ``medcopia/instance/config.json`` file to override the default values.
+The default configuration is stored as a dict in the ``medcopia/config/__init__.py`` file. Configuration should be customized further by setting environment variables to override the default values.
 
 
 .. warning::
@@ -43,20 +43,18 @@ The default configuration is stored as a dict in the ``medcopia/config/__init__.
 
 Example configuration::
 
-    {
-      "SECRET_KEY": "prod",
-      "SERVER_NAME": "localhost:5000",
-      "PREFERRED_URL_SCHEME": "https",
-      "SQLALCHEMY_TRACK_MODIFICATIONS": false,
-      "MAIL_SERVER": "mail.example.org",
-      "MAIL_PORT": 465,
-      "MAIL_USERNAME": "medcopia@example.org",
-      "MAIL_PASSWORD": "password",
-      "MAIL_DEFAULT_SENDER": "Medcopia Shortage Alerts <medcopia@example.org>",
-      "MAIL_PER_DAY_MAX": 5,
-      "RECAPTCHA_SITE_KEY": "your_recaptcha_site_key",
-      "RECAPTCHA_SECRET_KEY": "your_recaptcha_secret_key",
-    }
+    SECRET_KEY=prod"
+    SERVER_NAME=localhost:5000"
+    PREFERRED_URL_SCHEME=https"
+    SQLALCHEMY_TRACK_MODIFICATIONS=alse
+    MAIL_SERVER=mail.example.org"
+    MAIL_PORT=65
+    MAIL_USERNAME=medcopia@example.org"
+    MAIL_PASSWORD=password"
+    MAIL_DEFAULT_SENDER=Medcopia Shortage Alerts <medcopia@example.org>"
+    MAIL_PER_DAY_MAX=
+    RECAPTCHA_SITE_KEY=your_recaptcha_site_key"
+    RECAPTCHA_SECRET_KEY=your_recaptcha_secret_key"
 
 Note that currently only implicit TLS SMTP connections are supported. STARTTLS and unencrypted SMTP are not supported.
 
@@ -134,10 +132,18 @@ You can use ``systemd`` to run this config automatically on system start. Digita
 
 ``scraper`` is run as a module from the medcopia root directory::
 
+    set -a
+    source /path/to/.env
+    set +a
+
     export PYTHONPATH=/path/to/medcopia
     python3 -m scraper
 
 ``reset_email_counter`` is run as a script from the ``helpers`` directory::
+
+    set -a
+    source /path/to/.env
+    set +a
 
     export PYTHONPATH=/path/to/medcopia
     python3 helpers/reset_email_counter.py
