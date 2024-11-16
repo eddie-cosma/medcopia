@@ -56,13 +56,6 @@ Example configuration::
       "MAIL_PER_DAY_MAX": 5,
       "RECAPTCHA_SITE_KEY": "your_recaptcha_site_key",
       "RECAPTCHA_SECRET_KEY": "your_recaptcha_secret_key",
-      "REDDIT_KEY": "your_reddit_api_key",
-      "REDDIT_SECRET": "your_reddit_api_secret",
-      "REDDIT_USER_AGENT": "your_praw_user_agent",
-      "REDDIT_USERNAME": "your_reddit_username",
-      "REDDIT_PASSWORD": "your_reddit_password",
-      "REDDIT_SUBREDDIT": "drugshortages",
-      "REDDIT_NEW_SHORTAGE_FLAIR_ID": "362c42a2-474c-11ec-bbd5-0ed2a92f10f6"
     }
 
 Note that currently only implicit TLS SMTP connections are supported. STARTTLS and unencrypted SMTP are not supported.
@@ -81,7 +74,7 @@ Install
 Medcopia is composed of three components that require installation:
 
 #. A Flask web service called ``signup`` that displays the website and allows users to subscribe to email alerts.
-#. A module, ``scraper``, that scrapes the ASHP shortages list and checks for any changes whenever run. Changes are sent to users via email and submitted to the configured subreddit. This should be run once a day.
+#. A module, ``scraper``, that scrapes the ASHP shortages list and checks for any changes whenever run. This should be run once a day.
 #. A script called ``reset_email_counter.py`` that resets the number of registration attempts for each individual email address in the database. Registration attempts are limited by the ``MAIL_PER_DAY_MAX`` configuration value to prevent abuse. This script should be run once a day.
 
 ``signup`` web service

@@ -28,13 +28,6 @@ config = {
     'MAIL_PER_DAY_MAX': 5,
     'RECAPTCHA_SITE_KEY': '',
     'RECAPTCHA_SECRET_KEY': '',
-    'REDDIT_KEY': '',
-    'REDDIT_SECRET': '',
-    'REDDIT_USERAGENT': 'python:com.example.medcopia:v1.1',
-    'REDDIT_USERNAME': '',
-    'REDDIT_PASSWORD': '',
-    'REDDIT_SUBREDDIT': '',
-    'REDDIT_NEW_SHORTAGE_FLAIR_ID': None,
 }
 """Default configuration"""
 
