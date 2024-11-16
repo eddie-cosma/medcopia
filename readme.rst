@@ -63,7 +63,7 @@ Note that currently only implicit TLS SMTP connections are supported. STARTTLS a
 Testing configuration
 ---------
 
-A testing configuration can be used by creating ``medcopia/instance/test_config.json`` in the same format as the example above. When testing, set the environmental variable ``TESTING=True`` to use the testing configuration, to prevent emails from being sent, and to bypass reCAPTCHA.
+When testing, set the environmental variable ``TESTING=True`` to use the testing configuration, to prevent emails from being sent, and to bypass reCAPTCHA.
 
 =========
 Install
