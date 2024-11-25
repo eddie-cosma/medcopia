@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, current_app
 
-from models import User
 from helpers.emailer import validate
 from helpers.recaptcha import verify_recaptcha
+from models import User
 from signup import db
 from signup.utilities import generate_keys, send_opt_in_confirmation, verify_token
 
@@ -26,7 +26,7 @@ def signup():
             if registrant.opt_in_code:
                 # Ensure we are not hitting the maximum email limit
                 max_requests = current_app.config['MAIL_PER_DAY_MAX']
-                service_address = current_app.config['MAIL_USERNAME']
+                service_address = current_app.config['MAIL_DEFAULT_SENDER']
                 if registrant.opt_ins_sent >= max_requests:
                     flash(f'Only {max_requests} confirmation emails may be sent per day to prevent our emails being \
 marked as spam. Please wait until tomorrow or contact {service_address} for assistance.')
@@ -39,7 +39,7 @@ marked as spam. Please wait until tomorrow or contact {service_address} for assi
                 flash('This email address is already registered.')
             return render_template('signup.html', registrant=None, recaptcha_key=recaptcha_key)
 
-        # If email is valid and not in the database, add it, create confirm/unsub tokens and send confirmation email
+        # If email is valid and not in the database, add it, create confirm token and send confirmation email
         elif validate(email):
             registrant = User(email=email)
             db.session.add(registrant)
@@ -56,18 +56,9 @@ marked as spam. Please wait until tomorrow or contact {service_address} for assi
 
 @bp.route('/confirm/<token>', methods=['GET'])
 def confirm(token: str):
-    if email := verify_token(token, token_type='opt_in'):
-        service_address = current_app.config['MAIL_USERNAME']
+    if email := verify_token(token):
+        service_address = current_app.config['MAIL_DEFAULT_SENDER']
         return render_template('confirm.html', registrant=email, service_address=service_address)
     else:
-        flash('This email address has not been registered.')
-        return redirect(url_for('shortage.signup'))
-
-
-@bp.route('/unsubscribe/<token>', methods=['GET'])
-def unsubscribe(token: str):
-    if verify_token(token, token_type='opt_out'):
-        return render_template('unsubscribe.html')
-    else:
-        flash('This email address has not been registered.')
+        flash('An error occurred. This email address has not been registered.')
         return redirect(url_for('shortage.signup'))

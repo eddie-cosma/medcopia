@@ -9,12 +9,12 @@ When run as a module, does the following:
 
 import logging
 import os
-from datetime import date
 
 import requests
 from bs4 import BeautifulSoup
 
-from helpers.emailer import MassMessage
+from config import config
+from helpers.emailer import Message
 from models import Session, User
 from models.delta import ASHPDrug, DrugDelta
 
@@ -43,22 +43,42 @@ logging.info(f'Found {len(delta.new_shortages)} new and {len(delta.resolved_shor
 # Send emails
 if delta.new_shortages or delta.resolved_shortages:
     recipients = session.query(User).filter(User.opt_in_code == None).all()
-    today = date.today().strftime('%B %-d, %Y')
-    messenger = MassMessage(
-        db_session=session,
+
+    template_data = {}
+    if delta.new_shortages:
+        template_data['new_shortages'] = [
+            {
+                'name': drug.name,
+                'url': drug.url,
+            }
+            for drug in delta.new_shortages
+        ]
+    if delta.resolved_shortages:
+        template_data['resolved_shortages'] = [
+            {
+                'name': drug.name,
+                'url': drug.url,
+            }
+            for drug in delta.resolved_shortages
+        ]
+
+    message = Message(
         recipients=recipients,
         subject='Medcopia shortage alert',
-        template_name='alert.html',
-        today=today,
-        new_shortages=delta.new_shortages,
-        resolved_shortages=delta.resolved_shortages,
+        template_id=config.get('MAIL_ALERT_TEMPLATE'),
+        template_data=template_data,
+        session=session,
     )
 
     if os.getenv('TESTING', 'False') == 'False':
         logging.info('Sending shortage alert emails')
-        messenger.send_all()
-        logging.info('Updating local database with most recent shortage list')
-        delta.update_database()
+        message.send()
+        if message.success:
+            logging.info('Emails sent successfully')
+            logging.info('Updating local database with most recent shortage list')
+            delta.update_database()
+        else:
+            logging.error('Emails failed to send')
 
 session.commit()
 session.close()
