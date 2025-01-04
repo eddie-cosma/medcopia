@@ -1,6 +1,8 @@
 import requests
 from flask import request, current_app
 
+from config import config
+
 
 def verify_recaptcha(token: str) -> bool:
     """Validate the provided reCAPTCHA token.
@@ -11,6 +13,10 @@ def verify_recaptcha(token: str) -> bool:
     :param token: the token provided from the user request.
     :return: ``True`` if the token is valid, ``False`` otherwise.
     """
+
+    if config.get('TESTING'):
+        return True
+
     recaptcha_url = 'https://www.google.com/recaptcha/api/siteverify'
     recaptcha_secret_key = current_app.config['RECAPTCHA_SECRET_KEY']
     payload = {

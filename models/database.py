@@ -1,4 +1,7 @@
-from sqlalchemy import Column, Integer, DateTime, String, func
+from enum import Enum
+
+from sqlalchemy import Column, Integer, DateTime, String, func, ForeignKey
+from sqlalchemy.orm import relationship
 
 from models import Base
 
@@ -13,7 +16,6 @@ class User(Base):
     email = Column(String(255), nullable=False, unique=True)
     opt_in_code = Column(String(255), nullable=True)
     opt_ins_sent = Column(Integer, nullable=False, default=0)
-    last_message_time = Column(DateTime(timezone=False), nullable=True)
     created_time = Column(DateTime(timezone=False), nullable=False, server_default=func.now())
     modified_time = Column(DateTime(timezone=False), nullable=True, onupdate=func.now())
 
@@ -39,3 +41,21 @@ class Drug(Base):
         the local database and the ASHP website.
         """
         return ashp_base_detail_url + str(self.id)
+
+
+class EmailType(Enum):
+    OPT_IN = 0
+    SHORTAGE_ALERT = 1
+
+
+class EmailLog(Base):
+    """The email log model."""
+
+    __tablename__ = 'email_log'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    type_id = Column(Integer, nullable=False)
+    status_code = Column(Integer, nullable=False)
+    sent_time = Column(DateTime(timezone=False), nullable=False, server_default=func.now())
+
+    user = relationship('User')

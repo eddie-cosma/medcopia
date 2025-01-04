@@ -8,14 +8,13 @@ When run as a module, does the following:
 """
 
 import logging
-import os
 
 import requests
 from bs4 import BeautifulSoup
 
 from config import config
 from helpers.emailer import Message
-from models import Session, User
+from models import Session, User, EmailType
 from models.delta import ASHPDrug, DrugDelta
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s : %(levelname)s : %(message)s')
@@ -64,21 +63,20 @@ if delta.new_shortages or delta.resolved_shortages:
 
     message = Message(
         recipients=recipients,
-        subject='Medcopia shortage alert',
+        type=EmailType.SHORTAGE_ALERT,
         template_id=config.get('MAIL_ALERT_TEMPLATE'),
         template_data=template_data,
         session=session,
     )
 
-    if os.getenv('TESTING', 'False') == 'False':
-        logging.info('Sending shortage alert emails')
-        message.send()
-        if message.success:
-            logging.info('Emails sent successfully')
-            logging.info('Updating local database with most recent shortage list')
-            delta.update_database()
-        else:
-            logging.error('Emails failed to send')
+    logging.info('Sending shortage alert emails')
+    message.send()
+    if message.success:
+        logging.info('Emails sent successfully')
+        logging.info('Updating local database with most recent shortage list')
+        delta.update_database()
+    else:
+        logging.error('Emails failed to send')
 
 session.commit()
 session.close()

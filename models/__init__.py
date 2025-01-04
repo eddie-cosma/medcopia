@@ -7,5 +7,7 @@ engine = create_engine(config['SQLALCHEMY_DATABASE_URI'])
 Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-from .database import User, Drug
+from .database import User, Drug, EmailLog
 Base.metadata.create_all(bind=engine)
+
+from .database import EmailType

@@ -25,6 +25,7 @@ config = {
     'RECAPTCHA_SITE_KEY': '',
     'RECAPTCHA_SECRET_KEY': '',
     'SENDGRID_API_KEY': '',
+    'TESTING': False,
 }
 
 # Override the defaults with environment variables

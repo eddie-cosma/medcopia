@@ -1,12 +1,12 @@
 import re
 import time
-from datetime import datetime
 from typing import Any
 
+from python_http_client import HTTPError
 from sendgrid import SendGridAPIClient
 
 from config import config
-from models import User, Session
+from models import User, Session, EmailLog, EmailType
 
 
 def validate(address: str) -> bool:
@@ -18,7 +18,7 @@ class Message:
 
     def __init__(self,
                  recipients: list[User],
-                 subject: str,
+                 type: EmailType,
                  template_id: str,
                  template_data: dict[str, Any],
                  sender: str = config.get('MAIL_DEFAULT_SENDER'),
@@ -28,13 +28,14 @@ class Message:
                  ):
 
         self.recipients = recipients
-        self.subject = subject
+        self.type = type
         self.template_id = template_id
         self.template_data = template_data
         self.template_data['timeStamp'] = timestamp
         self.sender = sender
         self.asm_group = asm_group
 
+        self._set_subject()
         self._generate_request_body()
 
         self.status_code = None
@@ -42,6 +43,22 @@ class Message:
         self.headers = None
 
         self.session = session
+
+    @property
+    def success(self):
+        """Return True if message was sent successfully."""
+        if self.status_code == 202:
+            return True
+        else:
+            return False
+
+    def _set_subject(self):
+        if self.type == EmailType.OPT_IN:
+            self.subject = 'Confirm drug shortage alert subscription'
+        elif self.type == EmailType.SHORTAGE_ALERT:
+            self.subject = 'Medcopia shortage alert'
+        else:
+            self.subject = ''
 
     def _generate_request_body(self):
         """Generate the request body to attach to SendGrid request."""
@@ -59,29 +76,37 @@ class Message:
                 'dynamic_template_data': self.template_data,
             })
 
-    def _update_email_send_time(self):
-        """Update the last-sent time for each user in the database."""
+    def _log(self):
+        """Create a log item for each message sent."""
+        logged_messages = []
         for recipient in self.recipients:
-            recipient.last_message_time = datetime.now()
-            self.session.add(recipient)
+            log_message = EmailLog(
+                user=recipient,
+                type_id=self.type.value,
+                status_code=self.status_code,
+            )
+            logged_messages.append(log_message)
+        self.session.add_all(logged_messages)
         self.session.commit()
 
     def send(self):
         """Send the message using SendGrid API and log the result."""
+
+        # If we are running tests, simulate a successful email without sending
+        if config.get('TESTING'):
+            self.status_code = 202
+            self._log()
+            return
+
         sg = SendGridAPIClient(api_key=config.get('SENDGRID_API_KEY'))
         # TODO: Add a try catch here for python_http_client.exceptions.BadRequestsError 400 and others
-        response = sg.client.mail.send.post(request_body=self.request_body)
+        try:
+            response = sg.client.mail.send.post(request_body=self.request_body)
+        except HTTPError as e:
+            response = e
+
         self.status_code = response.status_code
         self.body = response.body
         self.headers = response.headers
 
-        if self.success:
-            self._update_email_send_time()
-
-    @property
-    def success(self):
-        """Return True if message was sent successfully."""
-        if self.status_code == 202:
-            return True
-        else:
-            return False
+        self._log()
