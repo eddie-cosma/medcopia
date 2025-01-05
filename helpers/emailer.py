@@ -99,7 +99,6 @@ class Message:
             return
 
         sg = SendGridAPIClient(api_key=config.get('SENDGRID_API_KEY'))
-        # TODO: Add a try catch here for python_http_client.exceptions.BadRequestsError 400 and others
         try:
             response = sg.client.mail.send.post(request_body=self.request_body)
         except HTTPError as e:
