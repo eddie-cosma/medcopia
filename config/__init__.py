@@ -5,7 +5,6 @@ defined here. Defaults can be overridden by exporting environment variables
 prior to running the application.
 """
 
-import json
 import os
 from pathlib import Path
 
@@ -19,14 +18,14 @@ config = {
     'SERVER_NAME': 'localhost:5000',
     'SQLALCHEMY_TRACK_MODIFICATIONS': False,
     'SQLALCHEMY_DATABASE_URI': 'sqlite:///' + str(ROOT / 'instance/data.sqlite'),
-    'MAIL_SERVER': '',  # must use SSL (not STARTTLS)
-    'MAIL_PORT': 465,  # SSL port
-    'MAIL_USERNAME': '',
-    'MAIL_PASSWORD': '',
     'MAIL_DEFAULT_SENDER': '',
-    'MAIL_PER_DAY_MAX': 5,
+    'MAIL_ALERT_TEMPLATE': '',
+    'MAIL_CONFIRM_TEMPLATE': '',
+    'MAIL_DEFAULT_ASM_GROUP': 0,
     'RECAPTCHA_SITE_KEY': '',
     'RECAPTCHA_SECRET_KEY': '',
+    'SENDGRID_API_KEY': '',
+    'TESTING': False,
 }
 
 # Override the defaults with environment variables
