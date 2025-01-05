@@ -1,5 +1,5 @@
 pytest~=8.3.4
-SQLAlchemy~=1.4.23
+SQLAlchemy~=2.0.36
 Flask~=3.1.0
 flask_sqlalchemy~=3.1.1
 itsdangerous~=2.2.0
