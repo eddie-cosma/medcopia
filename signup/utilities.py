@@ -3,7 +3,7 @@ restructured in future versions."""
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from flask import current_app, url_for, flash
 from itsdangerous import URLSafeSerializer
@@ -27,7 +27,7 @@ def generate_keys(email: str):
 def count_todays_opt_ins_sent(user: User) -> int:
     """Get the number of opt-in emails the user requested today"""
 
-    today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
     today_end = today_start + timedelta(days=1)
     opt_ins_sent = db.session.query(func.count(EmailLog.id)).filter(
         and_(
