@@ -43,37 +43,32 @@ The default configuration is stored as a dict in the ``medcopia/config/__init__.
 
 Example configuration::
 
-    SECRET_KEY=prod"
-    SERVER_NAME=localhost:5000"
-    PREFERRED_URL_SCHEME=https"
-    SQLALCHEMY_TRACK_MODIFICATIONS=alse
-    MAIL_SERVER=mail.example.org"
-    MAIL_PORT=65
-    MAIL_USERNAME=medcopia@example.org"
-    MAIL_PASSWORD=password"
-    MAIL_DEFAULT_SENDER=Medcopia Shortage Alerts <medcopia@example.org>"
-    MAIL_PER_DAY_MAX=
-    RECAPTCHA_SITE_KEY=your_recaptcha_site_key"
-    RECAPTCHA_SECRET_KEY=your_recaptcha_secret_key"
+    SECRET_KEY=prod
+    SERVER_NAME=localhost:5000
+    PREFERRED_URL_SCHEME=https
+    SQLALCHEMY_TRACK_MODIFICATIONS=False
+    MAIL_DEFAULT_SENDER=alert@example.com
+    MAIL_ALERT_TEMPLATE=d-sendgrid_alert_template_id
+    MAIL_CONFIRM_TEMPLATE=d-sendgrid_confirm_template_id
+    MAIL_DEFAULT_ASM_GROUP=12345
+    RECAPTCHA_SITE_KEY=your_recaptcha_site_key
+    RECAPTCHA_SECRET_KEY=your_recaptcha_secret_key
+    SENDGRID_API_KEY=your_sendgrid_api_key
 
-Note that currently only implicit TLS SMTP connections are supported. STARTTLS and unencrypted SMTP are not supported.
-
-``MAIL_PER_DAY_MAX`` refers to the number of signup attempts that are allowed per email address per day. This value is reset by ``reset_email_counter.py`` daily (see Install section below).
 
 Testing configuration
 ---------
 
-A testing configuration can be used by creating ``medcopia/instance/test_config.json`` in the same format as the example above. When testing, set the environmental variable ``TESTING=True`` to use the testing configuration, to prevent emails from being sent, and to bypass reCAPTCHA.
+When testing, set the environment variable ``TESTING=True``. This prevents emails from being sent, and allows reCAPTCHA to be bypassed.
 
 =========
 Install
 =========
 
-Medcopia is composed of three components that require installation:
+Medcopia is composed of two components that require installation:
 
 #. A Flask web service called ``signup`` that displays the website and allows users to subscribe to email alerts.
 #. A module, ``scraper``, that scrapes the ASHP shortages list and checks for any changes whenever run. This should be run once a day.
-#. A script called ``reset_email_counter.py`` that resets the number of registration attempts for each individual email address in the database. Registration attempts are limited by the ``MAIL_PER_DAY_MAX`` configuration value to prevent abuse. This script should be run once a day.
 
 ``signup`` web service
 ---------
@@ -127,7 +122,7 @@ Restart ``nginx`` after saving your configuration::
 
 You can use ``systemd`` to run this config automatically on system start. DigitalOcean has a `fantastic tutorial <https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-uswgi-and-nginx-on-ubuntu-18-04>`_ giving more detail on this setup.
 
-``scraper`` and ``reset_email_counter``
+``scraper``
 ----------
 
 ``scraper`` is run as a module from the medcopia root directory::
@@ -139,20 +134,10 @@ You can use ``systemd`` to run this config automatically on system start. Digita
     export PYTHONPATH=/path/to/medcopia
     python3 -m scraper
 
-``reset_email_counter`` is run as a script from the ``helpers`` directory::
+This script should be run once a day. The easiest way to do this automatically is by using ``cron``. For example, place the previous commands in a ``scraper.sh`` file in the ``medcopia/instance`` folder. Edit the crontab file using ``crontab -e`` and add the following to automatically run the script every day at 16:30::
 
-    set -a
-    source /path/to/.env
-    set +a
+    30 16 * * * /path/to/medcopia/instance/scraper.sh >> /path/to/medcopia/instance/scraper.log 2>&1
 
-    export PYTHONPATH=/path/to/medcopia
-    python3 helpers/reset_email_counter.py
-
-These scripts should be run once a day. The easiest way to do this automatically is by using ``cron``. For example, place the previous two commands in a ``reset_email_counter.sh`` file in the ``medcopia/instance`` folder. Edit the crontab file using ``crontab -e`` and add the following to automatically run the script every day at 03:00::
-
-    0 3 * * * /path/to/medcopia/instance/reset_email_counter.sh >> /path/to/medcopia/instance/reset_email_counter.log 2>&1
-
-The same can be done for the ``scraper`` module.
 
 =========
 Contributing
