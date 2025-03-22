@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import Blueprint, render_template, request, flash, redirect, url_for, current_app
 
 from helpers.emailer import validate
@@ -19,7 +21,8 @@ def signup():
         recaptcha_token = request.form.get('g-recaptcha-response')
         if not verify_recaptcha(recaptcha_token):
             flash('Please check the box attesting that you are not a robot.')
-            return render_template('signup.html', registrant=None, recaptcha_key=recaptcha_key)
+            return render_template('signup.html', registrant=None, recaptcha_key=recaptcha_key,
+                                   year=datetime.now().year)
 
         if registrant := db.session.query(User).filter_by(email=email).one_or_none():
             # Try to send confirmation email if registrant still has an opt-in code
@@ -29,7 +32,8 @@ def signup():
                 flash('Re-sending confirmation email. Please check your inbox to confirm this registration.')
             else:
                 flash('This email address is already registered.')
-            return render_template('signup.html', registrant=None, recaptcha_key=recaptcha_key)
+            return render_template('signup.html', registrant=None, recaptcha_key=recaptcha_key,
+                                   year=datetime.now().year)
 
         # If email is valid and not in the database, add it, create confirm token and send confirmation email
         elif validate(email):
@@ -39,18 +43,20 @@ def signup():
 
             generate_keys(email)
             send_opt_in_confirmation(email)
-            return render_template('signup.html', registrant=email, recaptcha_key=recaptcha_key)
+            return render_template('signup.html', registrant=email, recaptcha_key=recaptcha_key,
+                                   year=datetime.now().year)
         else:
             flash('This email address is invalid.')
 
-    return render_template('signup.html', registrant=None, recaptcha_key=recaptcha_key)
+    return render_template('signup.html', registrant=None, recaptcha_key=recaptcha_key, year=datetime.now().year)
 
 
 @bp.route('/confirm/<token>', methods=['GET'])
 def confirm(token: str):
     if email := verify_token(token):
         service_address = current_app.config['MAIL_DEFAULT_SENDER']
-        return render_template('confirm.html', registrant=email, service_address=service_address)
+        return render_template('confirm.html', registrant=email, service_address=service_address,
+                               year=datetime.now().year)
     else:
         flash('An error occurred. This email address has not been registered.')
         return redirect(url_for('shortage.signup'))
