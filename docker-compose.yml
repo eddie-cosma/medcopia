@@ -1,0 +1,24 @@
+services:
+  signup:
+    build:
+      context: .
+      dockerfile: signup.Dockerfile
+    env_file: ".env"
+    ports:
+      - "8487:8000"
+    user: "${UID}:${GID}"
+    volumes:
+      - ./instance:/app/instance
+    restart: always
+
+  scraper:
+    build:
+      context: .
+      dockerfile: scraper.Dockerfile
+    env_file: ".env"
+    user: "${UID}:${GID}"
+    volumes:
+      - ./instance:/app/instance
+    depends_on:
+      - signup
+    restart: always
