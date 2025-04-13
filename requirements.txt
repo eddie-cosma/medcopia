@@ -6,3 +6,4 @@ itsdangerous~=2.0.1
 requests~=2.26.0
 beautifulsoup4~=4.10.0
 sendgrid~=6.11.0
+werkzeug~=2.3.8
