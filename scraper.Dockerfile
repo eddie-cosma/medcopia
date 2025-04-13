@@ -15,4 +15,4 @@ ENV PYTHONPATH=/app \
     PYTHONDONTWRITEBYTECODE=1 \
     TZ=America/New_York
 
-CMD ["bash", "-c", "/app/run_scraper.sh >> /app/instance/scraper.log 2>&1"]
+CMD ["bash", "-c", "/app/run_scraper.sh 2>&1 | tee -a /app/instance/scraper.log"]
