@@ -1,0 +1,8 @@
+services:
+  app:
+    build: .
+    env_file: ".env"
+    ports:
+      - "8487:8000"
+    volumes:
+      - ./instance:/app/instance
