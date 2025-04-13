@@ -4,5 +4,6 @@ services:
     env_file: ".env"
     ports:
       - "8487:8000"
+    user: "${UID}:${GID}"
     volumes:
       - ./instance:/app/instance
