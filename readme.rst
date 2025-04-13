@@ -12,21 +12,9 @@ Medcopia is a hosted subscription service that tracks changes to the `ASHP drug 
 Download
 =========
 
-Medcopia is currently installable by cloning the Github respository::
+You can download Medcopia by cloning the Github respository::
 
     git clone https://github.com/eddie-cosma/medcopia.git
-
-We recommend setting up a virtual environment before downloading the required dependencies using ``pip``::
-
-    cd medcopia
-    python3 -m venv venv
-    source venv/bin/activate
-    pip install -r requirements.txt
-
-We also recommend installing ``uwsgi`` as a WSGI service and ``nginx`` as a reverse proxy to run the web portion of Medcopia::
-
-    pip install uwsgi
-    sudo apt install nginx
 
 =========
 Configure
@@ -62,8 +50,38 @@ Testing configuration
 When testing, set the environment variable ``TESTING=True``. This prevents emails from being sent, and allows reCAPTCHA to be bypassed.
 
 =========
-Install
+Install with Docker (recommended)
 =========
+
+#. Create a .env file in the project root that contains the environment variables used to configure the application.
+#. Create a uwsgi user (e.g., ``sudo useradd -M -s /sbin/false -U uwsgi``)
+#. Take note of the UID and GID of the user you just created. You can find them using the ``id`` command::
+
+    id -u uwsgi  # UID
+    id -g uwsgi  # GID
+
+#. Add the UID and GID to your .env file::
+
+    UID=(the uwsgi UID)
+    GID=(the uwsgi GID)
+#. Create an ``instance`` directory in the project root and ensure it is owned by uwsgi (``sudo chown -R uwsgi:uwsgi instance``)
+#. Run ``docker compose up``
+
+=========
+Install manually
+=========
+
+We recommend setting up a virtual environment before downloading the required dependencies using ``pip``::
+
+    cd medcopia
+    python3 -m venv venv
+    source venv/bin/activate
+    pip install -r requirements.txt
+
+We also recommend installing ``uwsgi`` as a WSGI service and ``nginx`` as a reverse proxy to run the web portion of Medcopia::
+
+    pip install uwsgi
+    sudo apt install nginx
 
 Medcopia is composed of two components that require installation:
 
@@ -86,6 +104,10 @@ The web service should be configured to run on a WSGI. For example, if using ``u
     vacuum = true
 
     die-on-term = true
+
+
+.. warning::
+    Do **not** use the existing uwsgi.ini file. It is meant for Docker-based deployments only.::
 
 This configuration can then be run::
 
