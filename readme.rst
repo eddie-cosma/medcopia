@@ -1,3 +1,6 @@
+.. note:: Archive notice
+   Thank you to everyone who followed Medcopia. Due to a combination of factors, I have chosen to archive this project. Interest in email alerts has waned, and there is no longer an easy way to send emails for free now that Sendgrid has eliminated their free tier. Additionally, the ASHP website recently implemented Cloudflare protection, making it harder to get drug shortage data programmatically. I am working on new ways to get this data and to incorporate it into `SageRx <https://github.com/coderxio/sagerx>`_.
+
 .. image:: signup/static/logo.png
     :alt: Medcopia Logo
     :align: center
